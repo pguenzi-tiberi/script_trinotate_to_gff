@@ -226,6 +226,32 @@ def writing_mRNA ( gff_file : chr , trinotate_report : chr , number_of_gene : in
     return(text_mrna)
     #########function OK############
 
+def writing_exon( gff_file : chr , trinotate_report : chr , number_of_gene : int , name_of_genome : chr) -> list :
+    table_trinotate = pd.read_csv(trinotate_report, sep="\t", header=None)
+    #table_id_uniprot = pd.read_csv(id_prot_uniprot, sep="\t", header=None), id_prot_uniprot : chr 
+    list_text_exon=[]
+    table_gff = pd.read_csv(gff_file, sep="\t", header=None)
+    line_gene = table_gff.loc[table_gff[3]=='exon'].index.values
+    for sample_exon in range(0,len(line_gene)):
+        list_gene_gff = table_gff.iloc[line_gene[sample_exon], 9].split("=")
+        list_ID_transcript_gff = list_gene_gff[2].split('.')
+        ID_gene_gff = list_ID_transcript_gff[0]
+        gene_element=''
+        name_of_gene=''
+        line_trinotate_gene = table_trinotate.iloc[number_of_gene,6].split('^')
+        trinotate_gene_name = line_trinotate_gene[0].split('_')
+        if table_trinotate.iloc[number_of_gene,6] != '.':
+            complete_name_of_gene = line_trinotate_gene[5].split('=')
+            name_of_gene=trinotate_gene_name[0]
+            gene_element="gene="+name_of_gene+";"
+            product_mrna="product="+complete_name_of_gene[1]
+        else :
+            name_of_gene=ID_gene_gff
+            product_mrna="product=hypothetical protein"
+        text_exon="ID=exon-gnl|WGS:"+name_of_genome+"|"+ID_gene_gff+"-T1-mrna-"+str(sample_exon+1)+";Parent=rna-gnl|WGS:"+name_of_genome+"|"+ID_gene_gff+"-T1-mrna;gbkey=mRNA;"+gene_element+"locus_tag="+ID_gene_gff+";orig_protein_id=gnl|WGS:"+name_of_genome+"|"+ID_gene_gff+"-T1;orig_transcript_id:gnl|WGS:"+name_of_genome+"|"+ID_gene_gff+"-T1-mrna;"+product_mrna
+        list_text_exon.append(text_exon)
+    return list_text_exon
+    ####### FUNCTION DONE###########
 '''
 def gene_dic ( trinotate_report: str, targetp_report: str, id_prot_uniprot: str) -> dictionnary :
 

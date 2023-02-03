@@ -113,6 +113,7 @@ def run() :
         line_gene=prepare.writing_gene(list_path_file_gene_gff[sample],args.trinotate_report,sample+1)
         print(line_gene)
         line_mrna=prepare.writing_mRNA(list_path_file_gene_gff[sample],args.trinotate_report,sample+1,args.id_genome)
+        list_line_exon=prepare.writing_exon(list_path_file_gene_gff[sample],args.trinotate_report,sample+1,args.id_genome)
         #dic_trinotate = prepare.trinotate_dic(
         #args.trinotate_report, args.targetp_report,list_path_file_gene_gff[sample]
     #)
