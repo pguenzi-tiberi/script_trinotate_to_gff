@@ -121,11 +121,30 @@ def writing_CDS( gff_file : chr , trinotate_report : chr , number_of_gene : int 
 
         #######note_feature define######
         print_info=0
+        note_feature=''
         signalp_note=''
         thmmer_note=''
         kegg_note=''
         eggnog=''
+        if (table_trinotate.iloc[number_of_gene][8] != '.'):
+            print_info = 1
+            signalp_data=table_trinotate.iloc[number_of_gene][8].split("^")
+            begin_signal_peptide=signalp_data[0].split(":")[1]
+            end_of_signal_peptide = signalp_data[1]
+            signalp_note='SECRETED:SignalP('+begin_signal_peptide+'-'+end_of_signal_peptide+'):'
+        information_transmembrane = ''
+        if (table_trinotate.iloc[number_of_gene][9] != '.') :
+            print_info = 1
+            transmembrane_data=table_trinotate.iloc[number_of_gene][9].split("^")
+            number_of_part=transmembrane_data[2].split("=")
+            information_transmembrane=transmembrane_data[3].split("=")
+            thmmer_note='TransMembrane:'+number_of_part[2]+' ('+information_transmembrane[2]+""
+
         
+
+
+        if (print_info == 1) :
+            note_feature="Note="+thmmer_note
 
 
 
