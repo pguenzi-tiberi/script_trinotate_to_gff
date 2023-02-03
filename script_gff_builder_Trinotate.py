@@ -7,7 +7,7 @@ import time
 import shutil
 import pandas as pd
 from sympy import im 
-from lib import function
+from lib import merging
 from lib import prepare
 from lib import separiting_file
 
@@ -59,6 +59,15 @@ def run() :
         dest="id_genome",
         help="Name of your genome (for example : JAAAIB01",
         default="GENOMESAMPLE",
+        required=True,
+    )
+
+    mandatory_args.add_argument(
+        "--prot_accession",
+        action="store",
+        dest="prot_accession",
+        help="For annotation. It is for protein_id in CDS part",
+        default='',
         required=True,
     )
 
@@ -114,9 +123,10 @@ def run() :
         print(line_gene)
         line_mrna=prepare.writing_mRNA(list_path_file_gene_gff[sample],args.trinotate_report,sample+1,args.id_genome)
         list_line_exon=prepare.writing_exon(list_path_file_gene_gff[sample],args.trinotate_report,sample+1,args.id_genome)
-        #dic_trinotate = prepare.trinotate_dic(
-        #args.trinotate_report, args.targetp_report,list_path_file_gene_gff[sample]
+        list_line_CDS=prepare.writing_CDS(list_path_file_gene_gff[sample],args.trinotate_report,sample+1,args.id_genome,args.prot_accession)
+        #merging.merging_in_each_file()
     #)
+
 
 
 if __name__ == '__main__':

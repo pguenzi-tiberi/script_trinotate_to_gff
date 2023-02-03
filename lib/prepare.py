@@ -8,6 +8,134 @@ import shutil
 from numpy import product
 import pandas as pd 
 
+
+
+def writing_gene(gff_file : chr , trinotate_report : chr , number_of_gene : int) -> list:
+    table_trinotate = pd.read_csv(trinotate_report, sep="\t", header=None)
+    #table_id_uniprot = pd.read_csv(id_prot_uniprot, sep="\t", header=None), id_prot_uniprot : chr 
+    table_gff = pd.read_csv(gff_file, sep="\t", header=None)
+    line_gene = table_gff.loc[table_gff[3]=='gene'].index.values
+    list_gene_gff = table_gff.iloc[line_gene , 9][0].split("=")
+    ID_gene_gff = list_gene_gff[1]
+    gene_element=''
+    name_of_gene=''
+    line_trinotate_gene=table_trinotate.iloc[number_of_gene,6].split('^')
+    trinotate_gene_name=line_trinotate_gene[0].split('_')
+    if table_trinotate.iloc[number_of_gene,6] != '.':
+        name_of_gene=trinotate_gene_name[0]
+        gene_element="gene="+name_of_gene+";"
+    else :
+        name_of_gene=ID_gene_gff
+    text_gene = "ID=gene-"+ID_gene_gff+";Name="+name_of_gene+";gbkey=Gene;"+gene_element+"gene_biotype=protein_coding;locus_tag="+ID_gene_gff
+    return text_gene
+
+def writing_mRNA ( gff_file : chr , trinotate_report : chr , number_of_gene : int , name_of_genome : chr) -> chr :
+    table_trinotate = pd.read_csv(trinotate_report, sep="\t", header=None)
+    #table_id_uniprot = pd.read_csv(id_prot_uniprot, sep="\t", header=None), id_prot_uniprot : chr 
+    table_gff = pd.read_csv(gff_file, sep="\t", header=None)
+    line_gene = table_gff.loc[table_gff[3]=='gene'].index.values
+    list_gene_gff = table_gff.iloc[line_gene , 9][0].split("=")
+    ID_transcript_gff = list_gene_gff[1]
+    ID_gene_gff = list_gene_gff[1]
+    mRNA_element=''
+    gene_element=''
+    name_of_gene=''
+    line_trinotate_gene = table_trinotate.iloc[number_of_gene,6].split('^')
+    line_trinotate_gene_2 = table_trinotate.iloc[number_of_gene,6].split('^')
+    line_trinotate_gene_3 = table_trinotate.iloc[number_of_gene,8].split('^')
+    line_trinotate_gene_4 = table_trinotate.iloc[number_of_gene,9].split('^')
+    trinotate_gene_name = line_trinotate_gene[0].split('_')
+    if table_trinotate.iloc[number_of_gene,6] != '.':
+        complete_name_of_gene = line_trinotate_gene[5].split('=')
+        name_of_gene=trinotate_gene_name[0]
+        gene_element="gene="+name_of_gene+";"
+        product_mrna="product="+complete_name_of_gene[1]
+    else :
+        name_of_gene=ID_gene_gff
+        product_mrna="product=hypothetical protein"
+    text_mrna="ID=rna-gnl|WGS:"+name_of_genome+"|"+ID_gene_gff+"-T1-mrna;Parent="+ID_gene_gff+";gbkey=mRNA;"+gene_element+"locus_tag="+ID_gene_gff+";orig_protein_id=gnl|WGS:"+name_of_genome+"|"+ID_gene_gff+"-T1;orig_transcript_id:gnl|WGS:"+name_of_genome+"|"+ID_gene_gff+"-T1-mrna;"+product_mrna
+    print(text_mrna)
+    return(text_mrna)
+    #########function OK############
+
+def writing_exon( gff_file : chr , trinotate_report : chr , number_of_gene : int , name_of_genome : chr) -> list :
+    table_trinotate = pd.read_csv(trinotate_report, sep="\t", header=None)
+    #table_id_uniprot = pd.read_csv(id_prot_uniprot, sep="\t", header=None), id_prot_uniprot : chr 
+    list_text_exon=[]
+    table_gff = pd.read_csv(gff_file, sep="\t", header=None)
+    line_gene = table_gff.loc[table_gff[3]=='exon'].index.values
+    for sample_exon in range(0,len(line_gene)):
+        list_gene_gff = table_gff.iloc[line_gene[sample_exon], 9].split("=")
+        list_ID_transcript_gff = list_gene_gff[2].split('.')
+        ID_gene_gff = list_ID_transcript_gff[0]
+        gene_element=''
+        name_of_gene=''
+        line_trinotate_gene = table_trinotate.iloc[number_of_gene,6].split('^')
+        trinotate_gene_name = line_trinotate_gene[0].split('_')
+        if table_trinotate.iloc[number_of_gene,6] != '.':
+            complete_name_of_gene = line_trinotate_gene[5].split('=')
+            name_of_gene=trinotate_gene_name[0]
+            gene_element="gene="+name_of_gene+";"
+            product_mrna="product="+complete_name_of_gene[1]
+        else :
+            name_of_gene=ID_gene_gff
+            product_mrna="product=hypothetical protein"
+        text_exon="ID=exon-gnl|WGS:"+name_of_genome+"|"+ID_gene_gff+"-T1-mrna-"+str(sample_exon+1)+";Parent=rna-gnl|WGS:"+name_of_genome+"|"+ID_gene_gff+"-T1-mrna;gbkey=mRNA;"+gene_element+"locus_tag="+ID_gene_gff+";orig_protein_id=gnl|WGS:"+name_of_genome+"|"+ID_gene_gff+"-T1;orig_transcript_id:gnl|WGS:"+name_of_genome+"|"+ID_gene_gff+"-T1-mrna;"+product_mrna
+        list_text_exon.append(text_exon)
+    return list_text_exon
+    ####### FUNCTION DONE###########
+
+def writing_CDS( gff_file : chr , trinotate_report : chr , number_of_gene : int , name_of_genome : chr, prot_accession_str : chr, prot_accession_num : int, id_prot_uniprot : chr ) -> list :
+    table_trinotate = pd.read_csv(trinotate_report, sep="\t", header=None)
+    table_id_uniprot = pd.read_csv(id_prot_uniprot, sep="\t", header=None)
+    list_text_exon=[]
+    table_gff = pd.read_csv(gff_file, sep="\t", header=None)
+    line_gene = table_gff.loc[table_gff[3]=='CDS'].index.values
+    for sample_exon in range(0,len(line_gene)):
+        list_gene_gff = table_gff.iloc[line_gene[sample_exon], 9].split("=")
+        list_ID_transcript_gff = list_gene_gff[2].split('.')
+        ID_gene_gff = list_ID_transcript_gff[0]
+        gene_element=''
+        name_of_gene=''
+        Uniprot_ID=''
+        line_trinotate_gene = table_trinotate.iloc[number_of_gene,6].split('^')
+        trinotate_gene_name = line_trinotate_gene[0].split('_')
+        if table_trinotate.iloc[number_of_gene,6] != '.':
+            complete_name_of_gene = line_trinotate_gene[5].split('=')
+            name_of_gene=trinotate_gene_name[0]
+            gene_element="gene="+name_of_gene+";"
+            product_mrna="product="+complete_name_of_gene[1]
+            Uniprot_ID=table_id_uniprot.loc[table_id_uniprot[1] == name_of_gene]
+        else :
+            name_of_gene=ID_gene_gff
+            product_mrna="product=hypothetical protein"
+        
+        #####define dbref_print#####
+        dbref_print=''
+        name_of_PFAM=''
+        if table_trinotate.iloc[number_of_gene,7] != '.':
+            pfam_feature=table_trinotate.iloc[number_of_gene,7].split('^')
+            name_of_PFAM=pfam_feature[0]
+        ncbi_feature=prot_accession_num
+        dbref_print="Dbxref:"+name_of_PFAM+Uniprot_ID+ncbi_feature+";"
+
+        #######note_feature define######
+        print_info=0
+        signalp_note=''
+        thmmer_note=''
+        kegg_note=''
+        eggnog=''
+        
+
+
+
+        
+
+
+        text_CDS="ID=cds-"+prot_accession_str+prot_accession_num+".1;Parent=rna-gnl|WGS:"+name_of_genome+"|"+ID_gene_gff+"-T1-mrna;"+dbref_print+"Name="+prot_accession_str+prot_accession_num+note_feature+"gbkey=CDS;"+name_of_gene_print+go_component_print+go_function_print+go_process_print+"locus_tag="+ID_gene_gff+";orig_transcript_id:gnl|WGS:"+name_of_genome+"|"+ID_gene_gff+"-T1-mrna;"+product_mrna
+
+
+
 '''
 def CDS_dic(trinotate_report: str, targetp_report: str, id_prot_uniprot: str) -> dictionnary :
 
@@ -174,91 +302,4 @@ def CDS_dic(trinotate_report: str, targetp_report: str, id_prot_uniprot: str) ->
 
         if (print_info == 1):
             note_gff = +';gbkey=CDS;;locus_tag=BGZ75_000005;orig_transcript_id=gnl|WGS:JAAAIB|BGZ75_000006-T1_mrna;'+
-
 '''
-
-def writing_gene(gff_file : chr , trinotate_report : chr , number_of_gene : int) -> list:
-    table_trinotate = pd.read_csv(trinotate_report, sep="\t", header=None)
-    #table_id_uniprot = pd.read_csv(id_prot_uniprot, sep="\t", header=None), id_prot_uniprot : chr 
-    table_gff = pd.read_csv(gff_file, sep="\t", header=None)
-    line_gene = table_gff.loc[table_gff[3]=='gene'].index.values
-    list_gene_gff = table_gff.iloc[line_gene , 9][0].split("=")
-    ID_gene_gff = list_gene_gff[1]
-    gene_element=''
-    name_of_gene=''
-    line_trinotate_gene=table_trinotate.iloc[number_of_gene,6].split('^')
-    trinotate_gene_name=line_trinotate_gene[0].split('_')
-    if table_trinotate.iloc[number_of_gene,6] != '.':
-        name_of_gene=trinotate_gene_name[0]
-        gene_element="gene="+name_of_gene+";"
-    else :
-        name_of_gene=ID_gene_gff
-    text_gene = "ID=gene-"+ID_gene_gff+";Name="+name_of_gene+";gbkey=Gene;"+gene_element+"gene_biotype=protein_coding;locus_tag="+ID_gene_gff
-    return text_gene
-
-def writing_mRNA ( gff_file : chr , trinotate_report : chr , number_of_gene : int , name_of_genome : chr) -> chr :
-    table_trinotate = pd.read_csv(trinotate_report, sep="\t", header=None)
-    #table_id_uniprot = pd.read_csv(id_prot_uniprot, sep="\t", header=None), id_prot_uniprot : chr 
-    table_gff = pd.read_csv(gff_file, sep="\t", header=None)
-    line_gene = table_gff.loc[table_gff[3]=='gene'].index.values
-    list_gene_gff = table_gff.iloc[line_gene , 9][0].split("=")
-    ID_transcript_gff = list_gene_gff[1]
-    ID_gene_gff = list_gene_gff[1]
-    mRNA_element=''
-    gene_element=''
-    name_of_gene=''
-    line_trinotate_gene = table_trinotate.iloc[number_of_gene,6].split('^')
-    line_trinotate_gene_2 = table_trinotate.iloc[number_of_gene,6].split('^')
-    line_trinotate_gene_3 = table_trinotate.iloc[number_of_gene,8].split('^')
-    line_trinotate_gene_4 = table_trinotate.iloc[number_of_gene,9].split('^')
-    trinotate_gene_name = line_trinotate_gene[0].split('_')
-    ####emplacement numero 1
-    if table_trinotate.iloc[number_of_gene,6] != '.':
-        complete_name_of_gene = line_trinotate_gene[5].split('=')
-        name_of_gene=trinotate_gene_name[0]
-        gene_element="gene="+name_of_gene+";"
-        product_mrna="product="+complete_name_of_gene[1]
-    else :
-        name_of_gene=ID_gene_gff
-        product_mrna="product=hypothetical protein"
-    text_mrna="ID=rna-gnl|WGS:"+name_of_genome+"|"+ID_gene_gff+"-T1-mrna;Parent="+ID_gene_gff+";gbkey=mRNA;"+gene_element+"locus_tag="+ID_gene_gff+";orig_protein_id=gnl|WGS:"+name_of_genome+"|"+ID_gene_gff+"-T1;orig_transcript_id:gnl|WGS:"+name_of_genome+"|"+ID_gene_gff+"-T1-mrna;"+product_mrna
-    print(text_mrna)
-    return(text_mrna)
-    #########function OK############
-
-def writing_exon( gff_file : chr , trinotate_report : chr , number_of_gene : int , name_of_genome : chr) -> list :
-    table_trinotate = pd.read_csv(trinotate_report, sep="\t", header=None)
-    #table_id_uniprot = pd.read_csv(id_prot_uniprot, sep="\t", header=None), id_prot_uniprot : chr 
-    list_text_exon=[]
-    table_gff = pd.read_csv(gff_file, sep="\t", header=None)
-    line_gene = table_gff.loc[table_gff[3]=='exon'].index.values
-    for sample_exon in range(0,len(line_gene)):
-        list_gene_gff = table_gff.iloc[line_gene[sample_exon], 9].split("=")
-        list_ID_transcript_gff = list_gene_gff[2].split('.')
-        ID_gene_gff = list_ID_transcript_gff[0]
-        gene_element=''
-        name_of_gene=''
-        line_trinotate_gene = table_trinotate.iloc[number_of_gene,6].split('^')
-        trinotate_gene_name = line_trinotate_gene[0].split('_')
-        if table_trinotate.iloc[number_of_gene,6] != '.':
-            complete_name_of_gene = line_trinotate_gene[5].split('=')
-            name_of_gene=trinotate_gene_name[0]
-            gene_element="gene="+name_of_gene+";"
-            product_mrna="product="+complete_name_of_gene[1]
-        else :
-            name_of_gene=ID_gene_gff
-            product_mrna="product=hypothetical protein"
-        text_exon="ID=exon-gnl|WGS:"+name_of_genome+"|"+ID_gene_gff+"-T1-mrna-"+str(sample_exon+1)+";Parent=rna-gnl|WGS:"+name_of_genome+"|"+ID_gene_gff+"-T1-mrna;gbkey=mRNA;"+gene_element+"locus_tag="+ID_gene_gff+";orig_protein_id=gnl|WGS:"+name_of_genome+"|"+ID_gene_gff+"-T1;orig_transcript_id:gnl|WGS:"+name_of_genome+"|"+ID_gene_gff+"-T1-mrna;"+product_mrna
-        list_text_exon.append(text_exon)
-    return list_text_exon
-    ####### FUNCTION DONE###########
-'''
-def gene_dic ( trinotate_report: str, targetp_report: str, id_prot_uniprot: str) -> dictionnary :
-
-
-def mRNA_dic ( trinotate_report: str, targetp_report: str, id_prot_uniprot: str) -> dictionnary :
-
-
-def exon_dic ( trinotate_report: str, targetp_report: str, id_prot_uniprot: str) -> dictionnary :
-'''  
-    

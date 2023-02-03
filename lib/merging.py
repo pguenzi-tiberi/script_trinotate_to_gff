@@ -8,3 +8,5 @@ import shutil
 import pandas as pd 
 
 
+def merging_in_each_file():
+    print("lol")
