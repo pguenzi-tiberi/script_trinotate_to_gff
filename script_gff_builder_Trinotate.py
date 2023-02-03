@@ -53,6 +53,15 @@ def run() :
         required=True,
     )
 
+    mandatory_args.add_argument(
+        "--id_genome",
+        action="store",
+        dest="id_genome",
+        help="Name of your genome (for example : JAAAIB01",
+        default="GENOMESAMPLE",
+        required=True,
+    )
+
 
     # Optional arguments
    
@@ -101,8 +110,9 @@ def run() :
     # Building dictionnary for trinotate report
     print(list_path_file_gene_gff)
     for sample in range (0,len(list_path_file_gene_gff)):
-        line_gene=prepare.writing_gene(list_path_file_gene_gff[sample],args.trinotate_report,len(list_path_file_gene_gff))
+        line_gene=prepare.writing_gene(list_path_file_gene_gff[sample],args.trinotate_report,sample+1)
         print(line_gene)
+        line_mrna=prepare.writing_mRNA(list_path_file_gene_gff[sample],args.trinotate_report,sample+1,args.id_genome)
         #dic_trinotate = prepare.trinotate_dic(
         #args.trinotate_report, args.targetp_report,list_path_file_gene_gff[sample]
     #)
