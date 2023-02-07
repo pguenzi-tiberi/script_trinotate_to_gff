@@ -12,7 +12,6 @@ import pandas as pd
 
 def writing_gene(gff_file : chr , trinotate_report : chr , number_of_gene : int) -> list:
     table_trinotate = pd.read_csv(trinotate_report, sep="\t", header=None)
-    #table_id_uniprot = pd.read_csv(id_prot_uniprot, sep="\t", header=None), id_prot_uniprot : chr 
     table_gff = pd.read_csv(gff_file, sep="\t", header=None)
     line_gene = table_gff.loc[table_gff[3]=='gene'].index.values
     list_gene_gff = table_gff.iloc[line_gene , 9][0].split("=")
@@ -31,7 +30,6 @@ def writing_gene(gff_file : chr , trinotate_report : chr , number_of_gene : int)
 
 def writing_mRNA ( gff_file : chr , trinotate_report : chr , number_of_gene : int , name_of_genome : chr) -> chr :
     table_trinotate = pd.read_csv(trinotate_report, sep="\t", header=None)
-    #table_id_uniprot = pd.read_csv(id_prot_uniprot, sep="\t", header=None), id_prot_uniprot : chr 
     table_gff = pd.read_csv(gff_file, sep="\t", header=None)
     line_gene = table_gff.loc[table_gff[3]=='gene'].index.values
     list_gene_gff = table_gff.iloc[line_gene , 9][0].split("=")
@@ -50,7 +48,6 @@ def writing_mRNA ( gff_file : chr , trinotate_report : chr , number_of_gene : in
         product_mrna="product=hypothetical protein"
     text_mrna="ID=rna-gnl|WGS:"+name_of_genome+"|"+ID_gene_gff+"-T1-mrna;Parent=gene-"+ID_gene_gff+";gbkey=mRNA;"+gene_element+"locus_tag="+ID_gene_gff+";orig_protein_id=gnl|WGS:"+name_of_genome+"|"+ID_gene_gff+"-T1;orig_transcript_id=gnl|WGS:"+name_of_genome+"|"+ID_gene_gff+"-T1-mrna;"+product_mrna
     return(text_mrna)
-    #########function OK############
 
 def writing_exon( gff_file : chr , trinotate_report : chr , number_of_gene : int , name_of_genome : chr) -> list :
     table_trinotate = pd.read_csv(trinotate_report, sep="\t", header=None)
@@ -76,7 +73,6 @@ def writing_exon( gff_file : chr , trinotate_report : chr , number_of_gene : int
         text_exon="ID=exon-gnl|WGS:"+name_of_genome+"|"+ID_gene_gff+"-T1-mrna-"+str(sample_exon+1)+";Parent=rna-gnl|WGS:"+name_of_genome+"|"+ID_gene_gff+"-T1-mrna;gbkey=mRNA;"+gene_element+"locus_tag="+ID_gene_gff+";orig_protein_id=gnl|WGS:"+name_of_genome+"|"+ID_gene_gff+"-T1;orig_transcript_id=gnl|WGS:"+name_of_genome+"|"+ID_gene_gff+"-T1-mrna;"+product_mrna
         list_text_exon.append(text_exon)
     return list_text_exon
-    ####### FUNCTION DONE###########
 
 def writing_CDS( gff_file : chr , trinotate_report : chr , number_of_gene : int , name_of_genome : chr, prot_accession_str : chr, prot_accession_num : float, id_prot_uniprot : chr ) -> list :
     table_trinotate = pd.read_csv(trinotate_report, sep="\t", header=None)
