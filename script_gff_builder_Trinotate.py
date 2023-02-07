@@ -52,6 +52,14 @@ def run() :
         default="",
         required=True,
     )
+    mandatory_args.add_argument(
+        "--uniprot_cor",
+        action="store",
+        dest="uniprot_cor",
+        help="TSV file (first column = ID Uniprot, second column = Name of protein)",
+        default="",
+        required=True,
+    )
 
     mandatory_args.add_argument(
         "--id_genome",
@@ -71,6 +79,14 @@ def run() :
         required=True,
     )
 
+    mandatory_args.add_argument(
+        "--prot_number",
+        action="store",
+        dest="prot_number",
+        help="For annotation. It is for protein_id in CDS part",
+        default='',
+        required=True,
+    )
 
     # Optional arguments
    
@@ -117,13 +133,11 @@ def run() :
     list_path_file_gene_gff = separiting_file.separiting(args.gff_input)
 
     # Building dictionnary for trinotate report
-    print(list_path_file_gene_gff)
     for sample in range (0,len(list_path_file_gene_gff)):
         line_gene=prepare.writing_gene(list_path_file_gene_gff[sample],args.trinotate_report,sample+1)
-        print(line_gene)
         line_mrna=prepare.writing_mRNA(list_path_file_gene_gff[sample],args.trinotate_report,sample+1,args.id_genome)
         list_line_exon=prepare.writing_exon(list_path_file_gene_gff[sample],args.trinotate_report,sample+1,args.id_genome)
-        list_line_CDS=prepare.writing_CDS(list_path_file_gene_gff[sample],args.trinotate_report,sample+1,args.id_genome,args.prot_accession)
+        list_line_CDS=prepare.writing_CDS(list_path_file_gene_gff[sample],args.trinotate_report,sample+1,args.id_genome,args.prot_accession,args.prot_number,args.uniprot_cor)
         #merging.merging_in_each_file()
     #)
 
