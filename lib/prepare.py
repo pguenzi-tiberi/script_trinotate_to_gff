@@ -88,7 +88,6 @@ def writing_CDS( gff_file : chr , trinotate_report : chr , number_of_gene : int 
         list_gene_gff = table_gff.iloc[line_gene[sample_exon], 9].split("=")
         list_ID_transcript_gff = list_gene_gff[2].split('.')
         ID_gene_gff = list_ID_transcript_gff[0]
-        gene_element=''
         name_of_gene=''
         Uniprot_ID=''
         line_trinotate_gene = table_trinotate.iloc[number_of_gene,6].split('^')
@@ -107,13 +106,12 @@ def writing_CDS( gff_file : chr , trinotate_report : chr , number_of_gene : int 
         #####define dbref_print#####
         dbref_print=''
         name_of_PFAM=''
-        kegg_note=''
         if table_trinotate.iloc[number_of_gene,7] != '.':
             pfam_feature=table_trinotate.iloc[number_of_gene,7].split('`')
             for pfam in range(0,len(pfam_feature)):
                 ind_pfam=pfam_feature[pfam].split('^')
                 name_of_PFAM+="PFAM:"+ind_pfam[0]+','
-        ncbi_feature=prot_accession_str+prot_accession_num
+        ncbi_feature=prot_accession_str+str(prot_accession_num)
         dbref_print="Dbxref:"+name_of_PFAM+Uniprot_ID+"NCBI_GP:"+ncbi_feature+";"
 
         #######note_feature define######
@@ -255,6 +253,6 @@ def writing_CDS( gff_file : chr , trinotate_report : chr , number_of_gene : int 
 
             concat_go_term=",".join(go_term_first) 
             general_go_term="Ontology_term="+concat_go_term+";gbkey=CDS;"+go_component_blastp+go_molecular_function_blastp+go_biological_process_blastp
-        text_CDS="ID=cds-"+prot_accession_str+prot_accession_num+".1;Parent=rna-gnl|WGS:"+name_of_genome+"|"+ID_gene_gff+"-T1-mrna;"+dbref_print+"Name="+prot_accession_str+prot_accession_num+note_feature+";"+general_go_term+"locus_tag="+ID_gene_gff+";orig_transcript_id:gnl|WGS:"+name_of_genome+"|"+ID_gene_gff+"-T1-mrna;"+product_mrna
+        text_CDS="ID=cds-"+prot_accession_str+str(prot_accession_num)+".1;Parent=rna-gnl|WGS:"+name_of_genome+"|"+ID_gene_gff+"-T1-mrna;"+dbref_print+"Name="+prot_accession_str+str(prot_accession_num)+note_feature+";"+general_go_term+"locus_tag="+ID_gene_gff+";orig_transcript_id:gnl|WGS:"+name_of_genome+"|"+ID_gene_gff+"-T1-mrna;"+product_mrna
         list_text_CDS.append(text_CDS)
     return list_text_CDS
