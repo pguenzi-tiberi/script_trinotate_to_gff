@@ -48,7 +48,7 @@ def writing_mRNA ( gff_file : chr , trinotate_report : chr , number_of_gene : in
     else :
         name_of_gene=ID_gene_gff
         product_mrna="product=hypothetical protein"
-    text_mrna="ID=rna-gnl|WGS:"+name_of_genome+"|"+ID_gene_gff+"-T1-mrna;Parent="+ID_gene_gff+";gbkey=mRNA;"+gene_element+"locus_tag="+ID_gene_gff+";orig_protein_id=gnl|WGS:"+name_of_genome+"|"+ID_gene_gff+"-T1;orig_transcript_id:gnl|WGS:"+name_of_genome+"|"+ID_gene_gff+"-T1-mrna;"+product_mrna
+    text_mrna="ID=rna-gnl|WGS:"+name_of_genome+"|"+ID_gene_gff+"-T1-mrna;Parent=gene-"+ID_gene_gff+";gbkey=mRNA;"+gene_element+"locus_tag="+ID_gene_gff+";orig_protein_id=gnl|WGS:"+name_of_genome+"|"+ID_gene_gff+"-T1;orig_transcript_id=gnl|WGS:"+name_of_genome+"|"+ID_gene_gff+"-T1-mrna;"+product_mrna
     return(text_mrna)
     #########function OK############
 
@@ -73,7 +73,7 @@ def writing_exon( gff_file : chr , trinotate_report : chr , number_of_gene : int
         else :
             name_of_gene=ID_gene_gff
             product_mrna="product=hypothetical protein"
-        text_exon="ID=exon-gnl|WGS:"+name_of_genome+"|"+ID_gene_gff+"-T1-mrna-"+str(sample_exon+1)+";Parent=rna-gnl|WGS:"+name_of_genome+"|"+ID_gene_gff+"-T1-mrna;gbkey=mRNA;"+gene_element+"locus_tag="+ID_gene_gff+";orig_protein_id=gnl|WGS:"+name_of_genome+"|"+ID_gene_gff+"-T1;orig_transcript_id:gnl|WGS:"+name_of_genome+"|"+ID_gene_gff+"-T1-mrna;"+product_mrna
+        text_exon="ID=exon-gnl|WGS:"+name_of_genome+"|"+ID_gene_gff+"-T1-mrna-"+str(sample_exon+1)+";Parent=rna-gnl|WGS:"+name_of_genome+"|"+ID_gene_gff+"-T1-mrna;gbkey=mRNA;"+gene_element+"locus_tag="+ID_gene_gff+";orig_protein_id=gnl|WGS:"+name_of_genome+"|"+ID_gene_gff+"-T1;orig_transcript_id=gnl|WGS:"+name_of_genome+"|"+ID_gene_gff+"-T1-mrna;"+product_mrna
         list_text_exon.append(text_exon)
     return list_text_exon
     ####### FUNCTION DONE###########
@@ -112,7 +112,7 @@ def writing_CDS( gff_file : chr , trinotate_report : chr , number_of_gene : int 
                 ind_pfam=pfam_feature[pfam].split('^')
                 name_of_PFAM+="PFAM:"+ind_pfam[0]+','
         ncbi_feature=prot_accession_str+str(prot_accession_num)
-        dbref_print="Dbxref:"+name_of_PFAM+Uniprot_ID+"NCBI_GP:"+ncbi_feature+";"
+        dbref_print="Dbxref="+name_of_PFAM+Uniprot_ID+"NCBI_GP:"+ncbi_feature+";"
 
         #######note_feature define######
         print_info=0
@@ -253,6 +253,6 @@ def writing_CDS( gff_file : chr , trinotate_report : chr , number_of_gene : int 
 
             concat_go_term=",".join(go_term_first) 
             general_go_term="Ontology_term="+concat_go_term+";gbkey=CDS;"+go_component_blastp+go_molecular_function_blastp+go_biological_process_blastp
-        text_CDS="ID=cds-"+prot_accession_str+str(prot_accession_num)+".1;Parent=rna-gnl|WGS:"+name_of_genome+"|"+ID_gene_gff+"-T1-mrna;"+dbref_print+"Name="+prot_accession_str+str(prot_accession_num)+note_feature+";"+general_go_term+"locus_tag="+ID_gene_gff+";orig_transcript_id:gnl|WGS:"+name_of_genome+"|"+ID_gene_gff+"-T1-mrna;"+product_mrna
+        text_CDS="ID=cds-"+prot_accession_str+str(prot_accession_num)+".1;Parent=rna-gnl|WGS:"+name_of_genome+"|"+ID_gene_gff+"-T1-mrna;"+dbref_print+"Name="+prot_accession_str+str(prot_accession_num)+note_feature+";"+general_go_term+"locus_tag="+ID_gene_gff+";orig_transcript_id=gnl|WGS:"+name_of_genome+"|"+ID_gene_gff+"-T1-mrna;"+product_mrna
         list_text_CDS.append(text_CDS)
     return list_text_CDS

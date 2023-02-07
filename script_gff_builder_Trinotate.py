@@ -88,14 +88,7 @@ def run() :
         required=True,
     )
 
-    mandatory_args.add_argument(
-        "--link_species",
-        action="store",
-        dest="link_sp",
-        help="NCBI etc link for the species in the gff",
-        default='',
-        required=True,
-    )
+    
 
     # Optional arguments
    
@@ -143,6 +136,7 @@ def run() :
 
     # Building dictionnary for trinotate report
     prot_number=float(args.prot_number)
+    final_table=''
     for sample in range (0,len(list_path_file_gene_gff)):
         if sample >0:
             prot_number+=1
@@ -150,9 +144,15 @@ def run() :
         line_mrna=prepare.writing_mRNA(list_path_file_gene_gff[sample],args.trinotate_report,sample+1,args.id_genome)
         list_line_exon=prepare.writing_exon(list_path_file_gene_gff[sample],args.trinotate_report,sample+1,args.id_genome)
         list_line_CDS=prepare.writing_CDS(list_path_file_gene_gff[sample],args.trinotate_report,sample+1,args.id_genome,args.prot_accession,prot_number,args.uniprot_cor)
-        merging.merging_in_each_file(list_path_file_gene_gff[sample],args.trinotate_report,line_gene,line_mrna,list_line_exon,list_line_CDS)
-    #)
-
+        if sample == 0:
+            final_table=merging.merging_in_each_file(list_path_file_gene_gff[sample],args.trinotate_report,line_gene,line_mrna,list_line_exon,list_line_CDS)
+        else :
+            gene_table=merging.merging_in_each_file(list_path_file_gene_gff[sample],args.trinotate_report,line_gene,line_mrna,list_line_exon,list_line_CDS)
+            final_table=pd.concat([final_table,gene_table],axis=0)
+        print(final_table)
+        if sample == 80 :
+            final_table.to_csv(path_or_buf="final_table.tsv", sep="\t", header=False)
+            break
 
 
 if __name__ == '__main__':
