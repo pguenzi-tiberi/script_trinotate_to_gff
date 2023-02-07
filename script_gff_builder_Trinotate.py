@@ -133,11 +133,14 @@ def run() :
     list_path_file_gene_gff = separiting_file.separiting(args.gff_input)
 
     # Building dictionnary for trinotate report
+    prot_number=float(args.prot_number)
     for sample in range (0,len(list_path_file_gene_gff)):
+        if sample >0:
+            prot_number+=1
         line_gene=prepare.writing_gene(list_path_file_gene_gff[sample],args.trinotate_report,sample+1)
         line_mrna=prepare.writing_mRNA(list_path_file_gene_gff[sample],args.trinotate_report,sample+1,args.id_genome)
         list_line_exon=prepare.writing_exon(list_path_file_gene_gff[sample],args.trinotate_report,sample+1,args.id_genome)
-        list_line_CDS=prepare.writing_CDS(list_path_file_gene_gff[sample],args.trinotate_report,sample+1,args.id_genome,args.prot_accession,args.prot_number,args.uniprot_cor)
+        list_line_CDS=prepare.writing_CDS(list_path_file_gene_gff[sample],args.trinotate_report,sample+1,args.id_genome,args.prot_accession,prot_number,args.uniprot_cor)
         #merging.merging_in_each_file()
     #)
 

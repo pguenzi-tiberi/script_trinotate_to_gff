@@ -35,15 +35,10 @@ def writing_mRNA ( gff_file : chr , trinotate_report : chr , number_of_gene : in
     table_gff = pd.read_csv(gff_file, sep="\t", header=None)
     line_gene = table_gff.loc[table_gff[3]=='gene'].index.values
     list_gene_gff = table_gff.iloc[line_gene , 9][0].split("=")
-    ID_transcript_gff = list_gene_gff[1]
     ID_gene_gff = list_gene_gff[1]
-    mRNA_element=''
     gene_element=''
     name_of_gene=''
     line_trinotate_gene = table_trinotate.iloc[number_of_gene,6].split('^')
-    line_trinotate_gene_2 = table_trinotate.iloc[number_of_gene,6].split('^')
-    line_trinotate_gene_3 = table_trinotate.iloc[number_of_gene,8].split('^')
-    line_trinotate_gene_4 = table_trinotate.iloc[number_of_gene,9].split('^')
     trinotate_gene_name = line_trinotate_gene[0].split('_')
     if table_trinotate.iloc[number_of_gene,6] != '.':
         complete_name_of_gene = line_trinotate_gene[5].split('=')
@@ -59,7 +54,6 @@ def writing_mRNA ( gff_file : chr , trinotate_report : chr , number_of_gene : in
 
 def writing_exon( gff_file : chr , trinotate_report : chr , number_of_gene : int , name_of_genome : chr) -> list :
     table_trinotate = pd.read_csv(trinotate_report, sep="\t", header=None)
-    #table_id_uniprot = pd.read_csv(id_prot_uniprot, sep="\t", header=None), id_prot_uniprot : chr 
     list_text_exon=[]
     table_gff = pd.read_csv(gff_file, sep="\t", header=None)
     line_gene = table_gff.loc[table_gff[3]=='exon'].index.values
@@ -84,10 +78,9 @@ def writing_exon( gff_file : chr , trinotate_report : chr , number_of_gene : int
     return list_text_exon
     ####### FUNCTION DONE###########
 
-def writing_CDS( gff_file : chr , trinotate_report : chr , number_of_gene : int , name_of_genome : chr, prot_accession_str : chr, prot_accession_num : int, id_prot_uniprot : chr ) -> list :
+def writing_CDS( gff_file : chr , trinotate_report : chr , number_of_gene : int , name_of_genome : chr, prot_accession_str : chr, prot_accession_num : float, id_prot_uniprot : chr ) -> list :
     table_trinotate = pd.read_csv(trinotate_report, sep="\t", header=None)
     table_id_uniprot = pd.read_csv(id_prot_uniprot, sep="\t", header=None)
-    print(table_id_uniprot)
     list_text_CDS=[]
     table_gff = pd.read_csv(gff_file, sep="\t", header=None)
     line_gene = table_gff.loc[table_gff[3]=='CDS'].index.values
@@ -120,12 +113,6 @@ def writing_CDS( gff_file : chr , trinotate_report : chr , number_of_gene : int 
             for pfam in range(0,len(pfam_feature)):
                 ind_pfam=pfam_feature[pfam].split('^')
                 name_of_PFAM+="PFAM:"+ind_pfam[0]+','
-        '''
-        if (table_trinotate.iloc[number_of_gene][11] != '.') :
-            kegg_feature=table_trinotate.iloc[number_of_gene,11].split(':')
-            ID_search_KO=kegg_feature[1]+":"+kegg_feature[2]
-            KEGG_table=
-        '''
         ncbi_feature=prot_accession_str+prot_accession_num
         dbref_print="Dbxref:"+name_of_PFAM+Uniprot_ID+"NCBI_GP:"+ncbi_feature+";"
 
@@ -138,11 +125,8 @@ def writing_CDS( gff_file : chr , trinotate_report : chr , number_of_gene : int 
         if (table_trinotate.iloc[number_of_gene][9] != '.') :
             print_info = 1
             transmembrane_data=table_trinotate.iloc[number_of_gene][9].split("^")
-            print(transmembrane_data)
             information_transmembrane=transmembrane_data[2].split("=")
-            print(information_transmembrane)
             number_of_part=information_transmembrane[1].split("-")
-            print(number_of_part)
             thmmer_note='TransMembrane:'+str(len(number_of_part))+' ('+information_transmembrane[1]+")"
             note_feature+=thmmer_note
         if (table_trinotate.iloc[number_of_gene][8] != '.'):
@@ -176,7 +160,6 @@ def writing_CDS( gff_file : chr , trinotate_report : chr , number_of_gene : int 
 
             print_info = 1
             go_term_b=table_trinotate.iloc[number_of_gene][13].split("`")
-            print ("list of GO general blastp", go_term_b)
             for go in range (0,len(go_term_b)):
                 terms_of_go=go_term_b[go].split("^")
                 if go_term_first.count(terms_of_go[2]) > 0 :
@@ -211,12 +194,8 @@ def writing_CDS( gff_file : chr , trinotate_report : chr , number_of_gene : int 
                     if go_p != len(go_biological_process)-1:
                         go_biological_process_blastp=go_biological_process_blastp+terms_of_go_p[2]+"|"+terms_of_go_p[0]+"||IEA,"
                     if go_p == len(go_biological_process)-1:
-                        go_biological_process_blastp=go_biological_process_blastp+terms_of_go_p[2]+"|"+terms_of_go_p[0]+"||IEA;"
-            #concat_go_term=",".join(go_term_first)
-            #general_go_term="Ontology_term="+concat_go_term+";gbkey=CDS;"+go_component_blastp+go_molecular_function_blastp+go_biological_process_blastp             
+                        go_biological_process_blastp=go_biological_process_blastp+terms_of_go_p[2]+"|"+terms_of_go_p[0]+"||IEA;"      
 
-
-        print("liste premiers go terms",go_term_first)
         ########PFAM
         if (table_trinotate.iloc[number_of_gene][14] != '.'):
             ####GO term for pfam
@@ -225,9 +204,6 @@ def writing_CDS( gff_file : chr , trinotate_report : chr , number_of_gene : int 
             for go in range (0,len(go_term_b)):
 
                 terms_of_go=go_term_b[go].split("^")
-                #go_term_first.append(terms_of_go[0])
-                #for x in range (0,len(terms_of_go)):
-
                 if terms_of_go.count("cellular_component") > 0 :
                     if go_term_first.count(terms_of_go[0]) > 0  and go_term_first.count(terms_of_go[2]) > 0:
                         print('in common')
@@ -281,6 +257,4 @@ def writing_CDS( gff_file : chr , trinotate_report : chr , number_of_gene : int 
             general_go_term="Ontology_term="+concat_go_term+";gbkey=CDS;"+go_component_blastp+go_molecular_function_blastp+go_biological_process_blastp
         text_CDS="ID=cds-"+prot_accession_str+prot_accession_num+".1;Parent=rna-gnl|WGS:"+name_of_genome+"|"+ID_gene_gff+"-T1-mrna;"+dbref_print+"Name="+prot_accession_str+prot_accession_num+note_feature+";"+general_go_term+"locus_tag="+ID_gene_gff+";orig_transcript_id:gnl|WGS:"+name_of_genome+"|"+ID_gene_gff+"-T1-mrna;"+product_mrna
         list_text_CDS.append(text_CDS)
-
-    print("voici la liste" , list_text_CDS)
     return list_text_CDS
