@@ -104,9 +104,9 @@ def writing_CDS( gff_file : chr , trinotate_report : chr , number_of_gene : int 
             complete_name_of_gene = line_trinotate_gene[5].split('=')
             name_of_gene=trinotate_gene_name[0]
             gene_element="gene="+name_of_gene+";"
-            product_mrna="product="+complete_name_of_gene[1]
+            product_mrna="product="+complete_name_of_gene[1][:-1]
             Uniprot_ID_index=table_id_uniprot.loc[table_id_uniprot[2] == line_trinotate_gene[0]].index.values
-            Uniprot_ID=table_id_uniprot.iloc[Uniprot_ID_index[0],0]
+            Uniprot_ID="UniProtKB/Swiss-Prot:"+table_id_uniprot.iloc[Uniprot_ID_index[0],0]+","
         else :
             name_of_gene=ID_gene_gff
             product_mrna="product=hypothetical protein"
@@ -119,7 +119,7 @@ def writing_CDS( gff_file : chr , trinotate_report : chr , number_of_gene : int 
             pfam_feature=table_trinotate.iloc[number_of_gene,7].split('`')
             for pfam in range(0,len(pfam_feature)):
                 ind_pfam=pfam_feature[pfam].split('^')
-                name_of_PFAM+=ind_pfam[0]+','
+                name_of_PFAM+="PFAM:"+ind_pfam[0]+','
         '''
         if (table_trinotate.iloc[number_of_gene][11] != '.') :
             kegg_feature=table_trinotate.iloc[number_of_gene,11].split(':')
@@ -127,7 +127,7 @@ def writing_CDS( gff_file : chr , trinotate_report : chr , number_of_gene : int 
             KEGG_table=
         '''
         ncbi_feature=prot_accession_str+prot_accession_num
-        dbref_print="Dbxref:"+name_of_PFAM+Uniprot_ID+ncbi_feature+";"
+        dbref_print="Dbxref:"+name_of_PFAM+Uniprot_ID+"NCBI_GP:"+ncbi_feature+";"
 
         #######note_feature define######
         print_info=0
@@ -182,11 +182,11 @@ def writing_CDS( gff_file : chr , trinotate_report : chr , number_of_gene : int 
                 if go_term_first.count(terms_of_go[2]) > 0 :
                     go_term_first.append(terms_of_go[2])
                     go_term_first_number.append(terms_of_go[0])
-                if terms_of_go.count("cellular_component") > 0  :
+                if terms_of_go.count("cellular_component") > 0  and go_term_first.count(terms_of_go[2]) > 0 :
                     go_component.append(go_term_b[go])
-                if terms_of_go.count("molecular_function") > 0  :
+                if terms_of_go.count("molecular_function") > 0  and go_term_first.count(terms_of_go[2]) > 0 :
                     go_molecular_function.append(go_term_b[go])
-                if terms_of_go.count("biological_process") > 0 :
+                if terms_of_go.count("biological_process") > 0 and go_term_first.count(terms_of_go[2]) > 0 :
                     go_biological_process.append(go_term_b[go])
             if (len(go_component) != 0 ):
                 go_component_blastp='go_component='
@@ -229,30 +229,26 @@ def writing_CDS( gff_file : chr , trinotate_report : chr , number_of_gene : int 
                 #for x in range (0,len(terms_of_go)):
 
                 if terms_of_go.count("cellular_component") > 0 :
-                    if go_term_first.count(terms_of_go[0]) > 0  or go_term_first.count(terms_of_go[2]) > 0:
+                    if go_term_first.count(terms_of_go[0]) > 0  and go_term_first.count(terms_of_go[2]) > 0:
                         print('in common')
                     else :
                         go_term_first.append(terms_of_go[0])
                         go_component.append(go_term_b[go])
                         
-                if terms_of_go.count("molecular_function") > 0 or go_term_first.count(terms_of_go[2]) > 0:
-                    if go_term_first.count(terms_of_go[0]) > 0 :
+                if terms_of_go.count("molecular_function") > 0 :
+                    if go_term_first.count(terms_of_go[0]) > 0 and go_term_first.count(terms_of_go[2]) > 0:
                         print('in common')
                     else :
                         go_term_first.append(terms_of_go[0])
                         go_molecular_function.append(go_term_b[go])
                     
-
                 if terms_of_go.count("biological_process") > 0:
-                    if go_term_first.count(terms_of_go[0]) > 0 or go_term_first.count(terms_of_go[2]) > 0:
+                    if go_term_first.count(terms_of_go[0]) > 0 and go_term_first.count(terms_of_go[2]) > 0:
                         print('in common')
                     else :
                         go_term_first.append(terms_of_go[0])
                         go_biological_process.append(go_term_b[go])
-                    
-            print("liste_cellular_component    ",go_component)
-            print("liste_biological    ",go_biological_process)
-            print("liste_moleculart    ",go_molecular_function)
+    
             if (len(go_component) != 0 ):
                 if go_component_blastp == '':
                     go_component_blastp='go_component='
@@ -281,10 +277,8 @@ def writing_CDS( gff_file : chr , trinotate_report : chr , number_of_gene : int 
                     if go_p == len(go_biological_process)-1:
                         go_biological_process_blastp=go_biological_process_blastp+terms_of_go_p[2]+"|"+terms_of_go_p[0]+"||IEA;"
 
-            concat_go_term=",".join(go_term_first)
-            print(concat_go_term)
+            concat_go_term=",".join(go_term_first) 
             general_go_term="Ontology_term="+concat_go_term+";gbkey=CDS;"+go_component_blastp+go_molecular_function_blastp+go_biological_process_blastp
-            print(general_go_term)
         text_CDS="ID=cds-"+prot_accession_str+prot_accession_num+".1;Parent=rna-gnl|WGS:"+name_of_genome+"|"+ID_gene_gff+"-T1-mrna;"+dbref_print+"Name="+prot_accession_str+prot_accession_num+note_feature+";"+general_go_term+"locus_tag="+ID_gene_gff+";orig_transcript_id:gnl|WGS:"+name_of_genome+"|"+ID_gene_gff+"-T1-mrna;"+product_mrna
         list_text_CDS.append(text_CDS)
 
