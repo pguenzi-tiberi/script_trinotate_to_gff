@@ -149,11 +149,12 @@ def run() :
         else :
             gene_table=merging.merging_in_each_file(list_path_file_gene_gff[sample],args.trinotate_report,line_gene,line_mrna,list_line_exon,list_line_CDS)
             final_table=pd.concat([final_table,gene_table],axis=0)
-        print(final_table)
-        if sample == 80 :
-            final_table.to_csv(path_or_buf="final_table.tsv", sep="\t", header=False)
-            break
+    final_table.to_csv(path_or_buf="final_table.tsv", sep="\t", header=False)
 
 
+    print(
+        f"\n Total running time : {float(time.perf_counter() - global_start)} seconds"
+    )
+            
 if __name__ == '__main__':
     run()
