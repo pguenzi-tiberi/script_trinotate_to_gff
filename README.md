@@ -1,6 +1,24 @@
 # script_trinotate_to_gff
 A little script to print a gff3 file 
 
+Script to extract name of the protein in  Trinotate report :
+
+`` 
+awk -F "\t" '{print $7}' report_trino.txt | awk -F "^" '{print $1}' | sort | uniq > prot_id 
+``
+
+``
+(Delete '.' and the name of the column in prot_id) 
+`` 
+
+``
+aria2c https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/idmapping/idmapping.dat.gz
+``
+
+``
+grep -f "prot_id"   idmapping.dat > prot_id_final
+`` 
+
 
 I will publish test version and test file after my publication but you can try to understand how to used it with this command line :
 
